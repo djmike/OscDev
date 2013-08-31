@@ -25,7 +25,7 @@ public:
 	explicit OscTree( const ci::Buffer& buffer );
 	
 	//! Creates an OscTree that represents an OSC Message
-	explicit OscTree( const std::string& address );
+	//explicit OscTree( const std::string& address );
 	
 	//! Creates an OscTree that represents an OSC Bundle
 	explicit OscTree( const TimeTag& timeTag = boost::posix_time::microsec_clock::local_time() );
@@ -59,7 +59,7 @@ public:
 	explicit OscTree( bool value );
 	
 	//! Creates an OscTree that represents an OSC-timetag argument
-	explicit OscTree( uint64_t timeTag, uint8_t typeTag = 't' );
+	explicit OscTree( TimeTag timeTag, uint8_t typeTag = 't' );
 
 	//! Creates an OscTree that represents an OSC Message
 	static OscTree      makeMessage( const std::string& address );
