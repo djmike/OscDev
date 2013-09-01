@@ -6,7 +6,7 @@
 //
 
 #include "OscTree.h"
-#include <iostream>
+#include <limits>
 
 using namespace ci;
 using namespace std;
@@ -55,13 +55,39 @@ OscTree::OscTree( float value, uint8_t typeTag )
 OscTree::OscTree( const string& value, uint8_t typeTag )
 {
 	mValue		= Buffer( value.length() + 1 );
-	mValue.copyFrom( value.c_str(), mValue.getDataSize() );
+	mValue.copyFrom( value.data(), mValue.getDataSize() );
 	
 	mTypeTag	= typeTag;
 }
-
-OscTree::OscTree( const char* value, uint8_t typeTag )
+/*
+OscTree::OscTree( const char* value, size_t numBytes, uint8_t typeTag )
 {
+	mTypeTag	= typeTag;
+}
+
+OscTree::OscTree( const uint8_t* value, size_t numBytes, uint8_t typeTag )
+{
+	mValue		= Buffer( numBytes );
+	mValue.copyFrom( value, mValue.getDataSize() );
+
+	mTypeTag	= typeTag;
+}
+*/
+OscTree::OscTree( const void* value, size_t numBytes, uint8_t typeTag )
+{
+	// according to OSC spec, the data must start with a 32-bit integer
+	// size count, followed by that many 8-bit bytes of binary data
+	// that means the max value of a 32-bit int is the max size, so
+	// check for it
+	// should we eliminate this limitation?
+	// TODO: create custom exception
+	if ( numBytes >= numeric_limits< int32_t >::max() ) {
+		throw std::exception( "Data size exceeds maximum limit." );
+	}
+
+	mValue		= Buffer( numBytes );
+	mValue.copyFrom( value, mValue.getDataSize() );
+
 	mTypeTag	= typeTag;
 }
 

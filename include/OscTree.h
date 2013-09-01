@@ -16,7 +16,8 @@
 class OscTree
 {
 public:
-	typedef boost::posix_time::ptime	TimeTag;
+	typedef boost::posix_time::ptime			TimeTag;
+	typedef boost::posix_time::microsec_clock	TimeTagClock;
 
 	//! Creates an empty OscTree
 	explicit OscTree();
@@ -47,7 +48,9 @@ public:
 	explicit OscTree( const std::string& value, uint8_t typeTag = 's' );
 	
 	//! Creates an OscTree that represents a blob argument
-	explicit OscTree( const char* value, uint8_t typeTag = 'b' );
+	//explicit OscTree( const char* value, size_t numBytes, uint8_t typeTag = 'b' );
+	//explicit OscTree( const uint8_t* value, size_t numBytes, uint8_t typeTag = 'b' );
+	explicit OscTree( const void* value, size_t numBytes, uint8_t typeTag = 'b' );
 	
 	//! Creates an OscTree that represents a 64-bit integer argument
 	explicit OscTree( int64_t value, uint8_t typeTag = 'h' );
@@ -65,13 +68,36 @@ public:
 	static OscTree      makeMessage( const std::string& address );
 	
 	//! Creates an OscTree that represents an OSC Bundle
-	static OscTree      makeBundle( const TimeTag& timeTag = boost::posix_time::microsec_clock::local_time() );
+	static OscTree      makeBundle( const TimeTag& timeTag = TimeTagClock::local_time() );
 
 	//! Attempt to retrieve the argument value as the requested type
+	// this does not work for a string or any object type because
+	// the data stored in the buffer will only be the data needed
+	// from the object rather than the entire object. For example,
+	// in OscTree( string, typetag ), we copy only the character
+	// data from the string into the buffer, so when we try to 
+	// point to the the data in the buffer as a string*, the data
+	// is not a string object, it is character data. We'll have
+	// this problem for any larger object type where only the data
+	// needed from that object type is copied into the buffer. string
+	// and TimeTag definitely will be affected.
+	// My solution is to use either a full specialization
 	template <typename T>
 	inline T			getValue() const
 	{
-		return *reinterpret_cast<T*>( const_cast<void*>( mValue.getData() ) );
+		return *static_cast<T*>( const_cast<void*>( mValue.getData() ) );
+	}
+
+	template<>
+	inline std::string	getValue() const
+	{
+		return static_cast<const char*>( mValue.getData() );
+	}
+
+	template<>
+	inline TimeTag		getValue() const
+	{
+		return TimeTagClock::local_time();
 	}
 	
 	//! Returns the raw binary representation of the value

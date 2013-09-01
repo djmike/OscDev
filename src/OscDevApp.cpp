@@ -1,6 +1,9 @@
 #include "cinder/app/AppNative.h"
 #include "cinder/gl/gl.h"
+#include "cinder/gl/Texture.h"
+#include "cinder/ip/Fill.h"
 #include "cinder/params/Params.h"
+#include "cinder/Surface.h"
 
 #include "OscTree.h"
 #include "UdpClient.h"
@@ -21,6 +24,9 @@ private:
 	std::string     mHost;
 	std::int32_t    mPort;
 
+	ci::Surface8u	mSurface;
+	ci::Surface8u	mSurfaceOsc;
+
 	ci::params::InterfaceGlRef      mParams;
 };
 
@@ -31,6 +37,8 @@ using namespace std;
 void OscDevApp::draw()
 {
 	gl::clear();
+	gl::draw( gl::Texture( mSurface ), Vec2f( 0.0f, 0.0f ) );
+	gl::draw( gl::Texture( mSurfaceOsc ), Vec2f( 330.0f, 0.0f ) );
 }
 
 void OscDevApp::update()
@@ -67,6 +75,19 @@ void OscDevApp::setup()
 	console() << "Test string\n";
 	console() << testString.getValue().getData() << endl;
 	console() << testString.getValue<string>() << endl;
+
+	mSurface				= Surface8u( 320, 240, false, SurfaceChannelOrder::RGB );
+	ip::fill( &mSurface, Colorf( 1.0f, 0.0f, 0.0f ) );
+
+	OscTree testBlob		= OscTree( mSurface.getData(), mSurface.getRowBytes() * mSurface.getHeight() );
+	console() << "Test blob\n";
+	console() << testBlob.getValue().getData() << endl;
+	console() << testBlob.getValue().getDataSize() << endl;
+	console() << testBlob.getValue().getAllocatedSize() << endl;
+	console() << mSurface.getRowBytes() * mSurface.getHeight() << endl;
+
+	mSurfaceOsc				= Surface8u( 320, 240, false, SurfaceChannelOrder::RGB );
+	memcpy( mSurfaceOsc.getData(), testBlob.getValue().getData(), testBlob.getValue().getDataSize() );
 
 	mHost       = "127.0.0.1";
 	mPort       = 2000;

@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -12,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
+    <Filter Include="Blocks">
+      <UniqueIdentifier>{4f3e675b-d2af-45f2-9839-d7f4c0c93cb4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\Cinder-Asio">
+      <UniqueIdentifier>{d4e438e8-f445-4f89-9898-b6dd40402770}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\OscDevApp.cpp">
@@ -23,10 +30,76 @@
     <ClInclude Include="..\include\Resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClCompile Include="..\src\OscTree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\blocks\Cinder-Asio\src\ClientInterface.cpp">
+      <Filter>Blocks\Cinder-Asio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\blocks\Cinder-Asio\src\DispatcherInterface.cpp">
+      <Filter>Blocks\Cinder-Asio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\blocks\Cinder-Asio\src\ServerInterface.cpp">
+      <Filter>Blocks\Cinder-Asio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\blocks\Cinder-Asio\src\SessionInterface.cpp">
+      <Filter>Blocks\Cinder-Asio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\blocks\Cinder-Asio\src\TcpClient.cpp">
+      <Filter>Blocks\Cinder-Asio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\blocks\Cinder-Asio\src\TcpServer.cpp">
+      <Filter>Blocks\Cinder-Asio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\blocks\Cinder-Asio\src\TcpSession.cpp">
+      <Filter>Blocks\Cinder-Asio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\blocks\Cinder-Asio\src\UdpClient.cpp">
+      <Filter>Blocks\Cinder-Asio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\blocks\Cinder-Asio\src\UdpSession.cpp">
+      <Filter>Blocks\Cinder-Asio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\blocks\Cinder-Asio\src\WaitTimer.cpp">
+      <Filter>Blocks\Cinder-Asio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\OscTree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\blocks\Cinder-Asio\src\ClientInterface.h">
+      <Filter>Blocks\Cinder-Asio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\blocks\Cinder-Asio\src\DispatcherInterface.h">
+      <Filter>Blocks\Cinder-Asio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\blocks\Cinder-Asio\src\ServerInterface.h">
+      <Filter>Blocks\Cinder-Asio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\blocks\Cinder-Asio\src\SessionInterface.h">
+      <Filter>Blocks\Cinder-Asio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\blocks\Cinder-Asio\src\TcpClient.h">
+      <Filter>Blocks\Cinder-Asio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\blocks\Cinder-Asio\src\TcpServer.h">
+      <Filter>Blocks\Cinder-Asio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\blocks\Cinder-Asio\src\TcpSession.h">
+      <Filter>Blocks\Cinder-Asio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\blocks\Cinder-Asio\src\UdpClient.h">
+      <Filter>Blocks\Cinder-Asio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\blocks\Cinder-Asio\src\UdpSession.h">
+      <Filter>Blocks\Cinder-Asio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\blocks\Cinder-Asio\src\WaitTimer.h">
+      <Filter>Blocks\Cinder-Asio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
