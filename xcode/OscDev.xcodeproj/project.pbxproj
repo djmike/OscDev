@@ -44,6 +44,7 @@
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 		7745818691184AD3BBDF9219 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
+		87948A6117D6532100CF57C9 /* OscTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OscTree.h; path = ../include/OscTree.h; sourceTree = "<group>"; };
 		87D222CB17CFF3A300197497 /* ClientInterface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ClientInterface.cpp; path = "../blocks/Cinder-Asio/src/ClientInterface.cpp"; sourceTree = "<group>"; };
 		87D222CC17CFF3A300197497 /* ClientInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClientInterface.h; path = "../blocks/Cinder-Asio/src/ClientInterface.h"; sourceTree = "<group>"; };
 		87D222CD17CFF3A300197497 /* DispatcherInterface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DispatcherInterface.cpp; path = "../blocks/Cinder-Asio/src/DispatcherInterface.cpp"; sourceTree = "<group>"; };
@@ -65,7 +66,6 @@
 		87D222DD17CFF3A300197497 /* WaitTimer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WaitTimer.cpp; path = "../blocks/Cinder-Asio/src/WaitTimer.cpp"; sourceTree = "<group>"; };
 		87D222DE17CFF3A300197497 /* WaitTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WaitTimer.h; path = "../blocks/Cinder-Asio/src/WaitTimer.h"; sourceTree = "<group>"; };
 		87D222EB17D0006A00197497 /* OscTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OscTree.cpp; path = ../src/OscTree.cpp; sourceTree = "<group>"; };
-		87D222EC17D0006A00197497 /* OscTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OscTree.h; path = ../src/OscTree.h; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* OscDev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OscDev.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FBE1F4938014904A1A0466F /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		F89D463BE27E412290590F78 /* OscDev_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = OscDev_Prefix.pch; sourceTree = "<group>"; };
@@ -155,7 +155,7 @@
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				87D222EC17D0006A00197497 /* OscTree.h */,
+				87948A6117D6532100CF57C9 /* OscTree.h */,
 				8FBE1F4938014904A1A0466F /* Resources.h */,
 				F89D463BE27E412290590F78 /* OscDev_Prefix.pch */,
 			);
