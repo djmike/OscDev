@@ -27,10 +27,10 @@ OscTree::OscTree( const Buffer& buffer )
 	mAddress	= address;
 }*/
 
-OscTree::OscTree( const TimeTag& timeTag )
+/*OscTree::OscTree( const TimeTag& timeTag )
 {
 	mTimeTag	= timeTag;
-}
+}*/
 
 OscTree::OscTree( uint8_t typeTag )
 {
@@ -121,15 +121,38 @@ OscTree::OscTree( TimeTag value, uint8_t typeTag )
 
 OscTree OscTree::makeMessage( const std::string& address )
 {
+	OscTree message;
+	message.setAddress( address );
+
+	return message;
 }
 
 OscTree OscTree::makeBundle( const TimeTag& timeTag )
 {
+	OscTree bundle;
+	bundle.setTimeTag( timeTag );
+
+	return bundle;
 }
 
 void OscTree::pushBack( const OscTree& child )
 {
 	mChildren.push_back( child );
+}
+
+Buffer OscTree::toBuffer() const
+{
+	return Buffer();
+}
+
+void OscTree::setAddress( const string& address )
+{
+	mAddress	= address;
+}
+
+void OscTree::setTimeTag( const TimeTag& timeTag )
+{
+	mTimeTag	= timeTag;
 }
 
 OscTree::ExcExceededMaxSize::ExcExceededMaxSize( size_t size )

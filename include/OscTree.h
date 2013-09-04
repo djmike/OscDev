@@ -11,8 +11,8 @@
 #include <string>
 #include <vector>
 #include "cinder/Buffer.h"
+#include "cinder/Exception.h"
 #include "boost/date_time/posix_time/posix_time.hpp"
-
 
 class OscTree
 {
@@ -30,7 +30,7 @@ public:
 	//explicit OscTree( const std::string& address );
 	
 	//! Creates an OscTree that represents an OSC Bundle
-	explicit OscTree( const TimeTag& timeTag = boost::posix_time::microsec_clock::local_time() );
+	//explicit OscTree( const TimeTag& timeTag );
 
 	// OSC Values
 	// TODO:
@@ -100,6 +100,12 @@ public:
 	
 	//! Converts entire OscTree structure to binary data based on OSC spec
 	ci::Buffer          toBuffer() const;
+
+	//! Sets the address, applies to OscTrees that represent OSC Messages
+	void				setAddress( const std::string& address );
+
+	//! Sets the time tag, applies to OscTress that represent OSC Bundles
+	void				setTimeTag( const TimeTag& timeTag );
     
 protected:
 	std::vector<OscTree>    mChildren;
@@ -109,7 +115,12 @@ protected:
 	uint8_t                 mTypeTag;
     
 public:
-    class ExcExceededMaxSize : ci::Exception
+	//! Base class for OscTree Exceptions
+	class Exception : public ci::Exception
+	{
+	};
+
+    class ExcExceededMaxSize : public Exception
     {
     public:
         ExcExceededMaxSize( size_t size );
@@ -140,3 +151,4 @@ inline OscTree::TimeTag OscTree::getValue<OscTree::TimeTag>() const
 // Empty Exception - if data is empty
 // Non convertible exception
 // dynamic_cast
+ 
