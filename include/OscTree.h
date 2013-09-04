@@ -13,6 +13,7 @@
 #include "cinder/Buffer.h"
 #include "boost/date_time/posix_time/posix_time.hpp"
 
+
 class OscTree
 {
 public:
@@ -35,7 +36,7 @@ public:
 	// TODO:
 	// implement ci::Color
 	
-	//! Creates an OscTree that represents a no-data, custom type tag argument
+	//! Creates an OscTree that represents an argument that has a custom type tag and no data
 	explicit OscTree( uint8_t typeTag );
 	
 	//! Creates an OscTree that represents a 32-bit integer argument
@@ -81,29 +82,17 @@ public:
 	// this problem for any larger object type where only the data
 	// needed from that object type is copied into the buffer. string
 	// and TimeTag definitely will be affected.
-	// My solution is to use either a full specialization
+	// My solution is to use template specialization
 	template <typename T>
 	inline T			getValue() const
 	{
 		return *static_cast<T*>( const_cast<void*>( mValue.getData() ) );
 	}
-
-	template<>
-	inline std::string	getValue() const
-	{
-		return static_cast<const char*>( mValue.getData() );
-	}
-
-	template<>
-	inline TimeTag		getValue() const
-	{
-		return TimeTagClock::local_time();
-	}
 	
-	//! Returns the raw binary representation of the value
+	//! Returns the raw binary representation of the value, only valid for an OscTree that represents an argument
 	ci::Buffer			getValue() const { return mValue; }
 	
-	//! Retruns the type tag
+	//! Returns the type tag, only valid for an OscTree that represents argument
 	uint8_t				getTypeTag() const { return mTypeTag; }
 	
 	//! Appends a child
@@ -118,7 +107,33 @@ protected:
 	std::string             mAddress;
 	TimeTag                 mTimeTag;
 	uint8_t                 mTypeTag;
+    
+public:
+    class ExcExceededMaxSize : ci::Exception
+    {
+    public:
+        ExcExceededMaxSize( size_t size );
+        
+        virtual const char* what() const throw()
+        {
+            return mMessage.c_str();
+        }
+    protected:
+        std::string         mMessage;
+    };
 };
+
+template<>
+inline std::string OscTree::getValue<std::string>() const
+{
+    return static_cast<const char*>( mValue.getData() );
+}
+
+template<>
+inline OscTree::TimeTag OscTree::getValue<OscTree::TimeTag>() const
+{
+    return TimeTagClock::local_time();
+}
 
 // throw an exception for trying to read a null
 // getValue() == nullptr

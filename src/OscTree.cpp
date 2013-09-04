@@ -6,6 +6,7 @@
 //
 
 #include "OscTree.h"
+#include "cinder/Utilities.h"
 #include <limits>
 
 using namespace ci;
@@ -82,7 +83,7 @@ OscTree::OscTree( const void* value, size_t numBytes, uint8_t typeTag )
 	// should we eliminate this limitation?
 	// TODO: create custom exception
 	if ( numBytes >= numeric_limits< int32_t >::max() ) {
-		throw std::exception( "Data size exceeds maximum limit." );
+		throw ExcExceededMaxSize( numBytes );
 	}
 
 	mValue		= Buffer( numBytes );
@@ -114,6 +115,25 @@ OscTree::OscTree( bool value )
 
 OscTree::OscTree( TimeTag value, uint8_t typeTag )
 {
+	
 	mTypeTag	= typeTag;
+}
+
+OscTree OscTree::makeMessage( const std::string& address )
+{
+}
+
+OscTree OscTree::makeBundle( const TimeTag& timeTag )
+{
+}
+
+void OscTree::pushBack( const OscTree& child )
+{
+	mChildren.push_back( child );
+}
+
+OscTree::ExcExceededMaxSize::ExcExceededMaxSize( size_t size )
+{
+    mMessage    = "Exceeded the maximum size limit. Size: " + toString( size );
 }
  
