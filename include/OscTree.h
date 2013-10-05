@@ -17,6 +17,7 @@
 class OscTree
 {
 public:
+	typedef uint8_t								TypeTag;
 	typedef boost::posix_time::ptime			TimeTag;
 	typedef boost::posix_time::microsec_clock	TimeTagClock;
 
@@ -37,33 +38,33 @@ public:
 	// implement ci::Color
 	
 	//! Creates an OscTree that represents an argument that has a custom type tag and no data
-	explicit OscTree( uint8_t typeTag );
+	explicit OscTree( TypeTag typeTag );
 	
 	//! Creates an OscTree that represents a 32-bit integer argument
-	explicit OscTree( int32_t value, uint8_t typeTag = 'i' );
+	explicit OscTree( int32_t value, TypeTag typeTag = 'i' );
 	
 	//! Creates an OscTree that represents a float argument
-	explicit OscTree( float value, uint8_t typeTag = 'f' );
+	explicit OscTree( float value, TypeTag typeTag = 'f' );
 	
 	//! Creates an OscTree that represents a string argument
-	explicit OscTree( const std::string& value, uint8_t typeTag = 's' );
+	explicit OscTree( const std::string& value, TypeTag typeTag = 's' );
 	
 	//! Creates an OscTree that represents a blob argument
-	//explicit OscTree( const char* value, size_t numBytes, uint8_t typeTag = 'b' );
-	//explicit OscTree( const uint8_t* value, size_t numBytes, uint8_t typeTag = 'b' );
-	explicit OscTree( const void* value, size_t numBytes, uint8_t typeTag = 'b' );
+	//explicit OscTree( const char* value, size_t numBytes, TypeTag typeTag = 'b' );
+	//explicit OscTree( const uint8_t* value, size_t numBytes, TypeTag typeTag = 'b' );
+	explicit OscTree( const void* value, size_t numBytes, TypeTag typeTag = 'b' );
 	
 	//! Creates an OscTree that represents a 64-bit integer argument
-	explicit OscTree( int64_t value, uint8_t typeTag = 'h' );
+	explicit OscTree( int64_t value, TypeTag typeTag = 'h' );
 	
 	//! Creates an OscTree that represents a double argument
-	explicit OscTree( double value, uint8_t typeTag = 'd' );
+	explicit OscTree( double value, TypeTag typeTag = 'd' );
 	
 	//! Creates an OscTree that represents a T (true)/F (false) argument
-	explicit OscTree( bool value );
+	//explicit OscTree( bool value );
 	
 	//! Creates an OscTree that represents an OSC-timetag argument
-	explicit OscTree( TimeTag timeTag, uint8_t typeTag = 't' );
+	explicit OscTree( TimeTag timeTag, TypeTag typeTag = 't' );
 
 	//! Creates an OscTree that represents an OSC Message
 	static OscTree      makeMessage( const std::string& address );
@@ -93,7 +94,15 @@ public:
 	ci::Buffer			getValue() const { return mValue; }
 	
 	//! Returns the type tag, only valid for an OscTree that represents argument
-	uint8_t				getTypeTag() const { return mTypeTag; }
+	TypeTag				getTypeTag() const { return mTypeTag; }
+	
+	bool							hasChildren() const;
+	std::vector<OscTree>&			getChildren();
+	const std::vector<OscTree>&		getChildren() const;
+	
+	bool				hasParent() const;
+	OscTree&			getParent();
+	const OscTree&		getParent() const;
 	
 	//! Appends a child
 	void				pushBack( const OscTree& child );
@@ -109,10 +118,18 @@ public:
     
 protected:
 	std::vector<OscTree>    mChildren;
+	OscTree*				mParent;
 	ci::Buffer              mValue;
 	std::string             mAddress;
 	TimeTag                 mTimeTag;
-	uint8_t                 mTypeTag;
+	TypeTag                 mTypeTag;
+	int32_t					mBlobSize;
+	
+	void					init();
+	void					appendTypeTagString( ci::Buffer& buffer, size_t& dataSize ) const;
+	void					appendAddress( ci::Buffer& buffer, size_t& dataSize ) const;
+	void					appendValue( ci::Buffer& buffer, size_t& dataSize ) const;
+	void					appendValue( ci::Buffer& buffer, size_t& dataSize, const ci::Buffer& valueBuffer ) const;
     
 public:
 	//! Base class for OscTree Exceptions
@@ -151,4 +168,3 @@ inline OscTree::TimeTag OscTree::getValue<OscTree::TimeTag>() const
 // Empty Exception - if data is empty
 // Non convertible exception
 // dynamic_cast
- 
