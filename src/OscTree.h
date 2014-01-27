@@ -25,7 +25,7 @@ public:
 	explicit OscTree();
 	
 	//! Creates an OscTree from binary data that is structred based on the OSC spec
-	explicit OscTree( const ci::Buffer& buffer );
+	explicit OscTree( ci::Buffer buffer );
 	
 	//! Creates an OscTree that represents an OSC Message
 	//explicit OscTree( const std::string& address );

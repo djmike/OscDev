@@ -42,22 +42,164 @@ void padWithZeroes( Buffer& buffer )
 	}
 }
 
+bool isZeroPadded( const char* p )
+{
+	const char* q = (const char*)ceil4( (size_t)p );
+	for ( ; p < q; ++p ) {
+		if ( *p != 0 ) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
 OscTree::OscTree()
 {
 	init();
 }
 
-OscTree::OscTree( const Buffer& buffer )
+OscTree::OscTree( Buffer buffer )
 {
 	init();
 	// create OscTree from binary data assuming
 	// binary data is structed based on the OSC spec
-	
+	const char* data = reinterpret_cast<const char*>( buffer.getData() );
+
 	// check if the first byte denotes an OSC Bundle
-	// by looking for #bundle
-	
-	// if it is not a bundle, it is an OSC Message
-	
+	// by looking for #bundle at the beginning
+	if ( *data == '#' ) {
+		// parse OSC Bundle
+	} else {
+		// parse OSC Message
+		// parse out the address pattern
+		const char* pBlockEnd	= data + buffer.getDataSize();
+		const char* pBegin		= data;
+		const char* pEnd		= (const char*)memchr( pBegin, 0, pBlockEnd - pBegin );
+
+		if ( pEnd == nullptr || *pBegin != '/' || *pEnd != '\0' || !isZeroPadded( pEnd + 1 ) ) {
+			// the address data is malformed
+			// throw an exception?
+			// just return an empty OscTree?
+		} else {
+			setAddress( pBegin );
+		}
+
+		// parse the type string
+		// TODO:
+		// Old OSC implementations are not guaranteed
+		// to have a type string. Should we care?
+		// For now, I am going to only support
+		// OSC implementations that include a
+		// type tag string
+		pBegin		= (const char*)ceil4( (size_t)pEnd + 1 );
+		pEnd		= (const char*)memchr( pBegin, 0, pBlockEnd - pBegin );
+
+		vector<char> typeTags;
+
+		if ( pEnd == nullptr || *pBegin != ',' || !isZeroPadded( pEnd + 1 ) ) {
+			// malformed type tag string
+		} else {
+			// increment pBegin by 1 to exclude comma
+			typeTags.assign( pBegin + 1, pEnd );
+		}
+
+		// TODO:
+		// How do you read data from a buffer
+		// if you aren't sure exactly what the
+		// data in the buffer is meant to be?
+		// We give the user the ability to create
+		// custom type tags for all arguments
+		// so how can we know what the data
+		// in the buffer is?
+		// For now, in the spirit of getting this
+		// working, I'm going to assume type tags
+		// specify argument type, and therefore size
+		if ( !typeTags.empty() ) {
+			// read arguments
+			pBegin	= (const char*)ceil4( (size_t)pEnd + 1 );
+
+			for ( char typeTag : typeTags ) {
+				size_t sz = 0;
+				if ( pBegin < pBlockEnd ) {
+					if ( typeTag == 'i' ) {
+						// 32-bit int is 4 bytes
+						const int32_t* const pValue	= reinterpret_cast<const int32_t*>( pBegin );
+						int32_t value				= *pValue;
+						sz							= 4;
+
+						pushBack( OscTree( value, typeTag ) );
+					} else if ( typeTag == 'f' ) {
+						// float is 4 bytes
+						const float* const pValue	= reinterpret_cast<const float*>( pBegin );
+						float value					= *pValue;
+						sz							= 4;
+
+						pushBack( OscTree( value, typeTag ) );
+					} else if ( typeTag == 's' ) {
+						pEnd						= reinterpret_cast<const char*>( memchr( pBegin, 0, pBlockEnd - pBegin ) );
+						string s					= string( pBegin, pEnd - pBegin );
+						sz							= ceil4( s.size() + 1 );
+
+						pushBack( OscTree( s, typeTag ) );
+					} else if ( typeTag == 'b' ) {
+						// the first 4 bytes of a blob are a 32-bit integer
+						// representing the number of 8-bit bytes in the blob
+						const int32_t* const pValue	= reinterpret_cast<const int32_t*>( pBegin );
+						int32_t blobSize			= *pValue;
+						uint8_t* blobData			= new uint8_t[ blobSize ]();
+						sz							= ceil4( blobSize + 4 );
+
+						memcpy( blobData, pBegin + 4, blobSize );
+						pushBack( OscTree( blobData, blobSize ) );
+					} else if ( typeTag == 'h' ) {
+						// 64-bit int is 8 bytes
+						const int64_t* const pValue	= reinterpret_cast<const int64_t*>( pBegin );
+						int64_t value				= *pValue;
+						sz							= 8;
+
+						pushBack( OscTree( value, typeTag ) );
+					} else if ( typeTag == 'd' ) {
+						// double is 8 bytes
+						const double* const pValue	= reinterpret_cast<const double*>( pBegin );
+						double value				= *pValue;
+						sz							= 8;
+
+						pushBack( OscTree( value, typeTag ) );
+					} else if ( typeTag == 'T' ) {
+						// true value, no bytes allocated,
+						// so no need to move pointer
+						sz = 0;
+
+						pushBack( OscTree( typeTag ) );
+					} else if ( typeTag == 'F' ) {
+						// false value, no bytes allocated,
+						// so no need to move pointer
+						sz = 0;
+
+						pushBack( OscTree( typeTag ) );
+					} else if ( typeTag == 'N' ) {
+						// nil value, no bytes allocated,
+						// so no need to move pointer
+						sz = 0;
+
+						pushBack( OscTree( typeTag ) );
+					} else if ( typeTag == 'I' ) {
+						// infinitum value, no bytes allocated,
+						// so no need to move pointer
+						sz = 0;
+
+						pushBack( OscTree( typeTag ) );
+					} else {
+						// unknown type tag
+						// should throw error?
+					}
+
+					pBegin += sz;
+				}
+			}
+		}
+	}
 }
 
 /*OscTree::OscTree( const std::string& address )
@@ -302,7 +444,7 @@ void OscTree::appendAddress( Buffer& buffer, size_t& dataSize ) const
 void OscTree::appendTypeTagString( Buffer& buffer, size_t& dataSize ) const
 {
 	size_t typeTagSize			= sizeof( TypeTag );
-	size_t newDataSize			= ( mChildren.size() + 1 ) * typeTagSize; // need to add 1 for the ','
+	size_t newDataSize			= ( mChildren.size() + 1 + 1 ) * typeTagSize; // need to add 1 for the ',' and 1 for a '\0'
 	size_t newDataSizePadded	= ceil4( newDataSize );
 	size_t oldDataSize			= dataSize;
 	size_t newBufferDataSize	= oldDataSize + newDataSizePadded;
@@ -321,6 +463,8 @@ void OscTree::appendTypeTagString( Buffer& buffer, size_t& dataSize ) const
 		memcpy( pBuffer, &typeTag, typeTagSize );
 		pBuffer				+= typeTagSize;
 	}
+
+	*pBuffer = '\0';
 	
 	size_t diff			= newDataSizePadded - newDataSize;
 	
@@ -332,8 +476,13 @@ void OscTree::appendTypeTagString( Buffer& buffer, size_t& dataSize ) const
 
 void OscTree::appendValue( Buffer &buffer, size_t &dataSize ) const
 {
+	size_t extraByteSize = 0;
+	if ( getTypeTag() == 'b' ) {
+		extraByteSize = 4;
+	}
+
 	Buffer valueBuffer			= getValue();
-	size_t newDataSize			= valueBuffer.getDataSize();
+	size_t newDataSize			= valueBuffer.getDataSize() + extraByteSize;
 	size_t newDataSizePadded	= ceil4( newDataSize );
 	size_t oldDataSize			= dataSize;
 	size_t newBufferSize		= oldDataSize + newDataSizePadded;
@@ -342,8 +491,16 @@ void OscTree::appendValue( Buffer &buffer, size_t &dataSize ) const
 	
 	uint8_t* pBuffer	= reinterpret_cast<uint8_t*>( buffer.getData() );
 	pBuffer				+= oldDataSize;
-	
-	memcpy( pBuffer, valueBuffer.getData(), newDataSize );
+
+	// if this is a blob, a 32-bit int size
+	// count needs to be prepended to the data
+	if ( getTypeTag() == 'b' ) {
+		memcpy( pBuffer, &mBlobSize, extraByteSize );
+		pBuffer			+= extraByteSize;
+		memcpy( pBuffer, valueBuffer.getData(), mBlobSize );
+	} else {
+		memcpy( pBuffer, valueBuffer.getData(), newDataSize );
+	}
 	
 	size_t diff			= newDataSizePadded - newDataSize;
 	

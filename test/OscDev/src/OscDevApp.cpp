@@ -7,7 +7,7 @@
 
 #include "OscTree.h"
 #include "UdpClient.h"
-#include "TcpServer.h"
+#include "UdpServer.h"
 
 class OscDevApp : public ci::app::AppNative
 {
@@ -16,10 +16,11 @@ public:
 	void setup();
 	void update();
 	void draw();
-
-	void onUdpError( std::string error, size_t bytesTransferred );
+	void keyDown( ci::app::KeyEvent event );
 
 private:
+	void onUdpError( std::string error, size_t bytesTransferred );
+
 	void testInt32();
 	void testString();
 	void testBlobImage();
@@ -28,23 +29,29 @@ private:
 	void testFloat();
 	void testDouble();
 	void testMessage();
+	void testFromBuffer();
 
+	void setupParams();
 	void setupUdp();
 	void write();
 
+	UdpServerRef	mServer;
+	UdpSessionRef	mServerSession;
 	UdpClientRef    mClient;
-	UdpSessionRef   mSession;
+	UdpSessionRef   mClientSession;
 	std::string     mHost;
 	std::int32_t    mPort;
 
-	ci::Surface8u mSurface;
-	ci::Surface8u mSurfaceOsc;
+	ci::Surface8u	mSurface;
+	ci::Surface8u	mSurfaceOsc;
 
 	ci::params::InterfaceGlRef      mParams;
 	std::string mTestStr;
 };
 
 #include "cinder/Rand.h"
+#include "cinder/Utilities.h"
+#include <limits>
 
 using namespace ci;
 using namespace ci::app;
@@ -62,6 +69,13 @@ void OscDevApp::draw()
 	}
 
 	mParams->draw();
+}
+
+void OscDevApp::keyDown( KeyEvent event )
+{
+	if ( event.getChar() == 't' ) {
+		testFromBuffer();
+	}
 }
 
 void OscDevApp::update()
@@ -87,9 +101,11 @@ void OscDevApp::setup()
 	console() << sizeof( int32_t ) << endl;
 	console() << sizeof( uint8_t ) << endl;
 
-	setupUdp();
+	setupParams();
+	//setupUdp();
 
-	testMessage();
+	testFromBuffer();
+	// testMessage();
 	// testInt32();
 	// testString();
 	// testBlobImage();
@@ -99,9 +115,9 @@ void OscDevApp::setup()
 	// testDouble();
 }
 
-void OscDevApp::setupUdp()
+void OscDevApp::setupParams()
 {
-	mTestStr = "Hello, OSC Server";
+	mTestStr	= "Hello, OSC Server";
 	mHost       = "127.0.0.1";
 	mPort       = 2000;
 
@@ -111,18 +127,44 @@ void OscDevApp::setupUdp()
 	mParams->addParam( "Port", &mPort );
 	mParams->addSeparator();
 	mParams->addButton( "Write", bind( &OscDevApp::write, this ), "key=w" );
+}
 
-	mClient     = UdpClient::create( io_service() );
+void OscDevApp::setupUdp()
+{
+	//mServer = UdpServer::create( io_service() );
+	//mServer->connectAcceptEventHandler( [ & ]( UdpSessionRef session )
+	//{
+	//	mServerSession = session;
 
+	//	mServerSession->connectErrorEventHandler( &OscDevApp::onUdpError, this );
+	//	mServerSession->connectReadEventHandler( [ & ]( Buffer buffer )
+	//	{
+	//		console() << "Server Session read " << toString( buffer.getDataSize() ) << " bytes\n"
+	//			<< UdpSession::bufferToString( buffer ) << endl;
+
+	//		mServerSession->read();
+	//	} );
+
+	//	mServerSession->connectReadCompleteEventHandler( [ & ]()
+	//	{
+	//		console() << "Server session read complete" << endl;
+	//	} );
+
+	//	mServerSession->read();
+	//} );
+
+	//mServer->accept( mPort );
+
+	mClient = UdpClient::create( io_service() );
 	mClient->connectErrorEventHandler( &OscDevApp::onUdpError, this );
 	mClient->connectConnectEventHandler( [&]( UdpSessionRef session )
 	{
 		console() << "UdpClient connected " << mHost << ":" << mPort << endl;
-		mSession = session;
+		mClientSession = session;
 
-		mSession->connectErrorEventHandler( &OscDevApp::onUdpError, this );
+		mClientSession->connectErrorEventHandler( &OscDevApp::onUdpError, this );
 
-		mSession->connectWriteEventHandler( [&]( size_t bytesTransferred )
+		mClientSession->connectWriteEventHandler( [&]( size_t bytesTransferred )
 		{
 			console() << "bytesTransfered: " << bytesTransferred << endl;
 		} );
@@ -248,19 +290,73 @@ void OscDevApp::testDouble()
 
 }
 
+void OscDevApp::testFromBuffer()
+{
+	float f		= 3.14159f;
+	string s	= "Hello";
+	int32_t i	= 512;
+	int64_t h	= numeric_limits<int64_t>::max();
+	double d	= 1.61803398875;
+
+	// test blob
+	Surface8u b = Surface8u( 4, 4, true, SurfaceChannelOrder::RGBA );
+	ip::fill( &b, ColorAf( 0.0f, 1.0f, 0.0f, 1.0f ), Area( 0, 0, b.getWidth() / 2, b.getHeight() ) );
+	ip::fill( &b, ColorAf( 0.0f, 0.0f, 1.0f, 1.0f ), Area( b.getWidth() / 2, 0, b.getWidth(), b.getHeight() ) );
+
+	mSurface = b.clone( true );
+
+	OscTree message = OscTree::makeMessage( "/foo/bar/baz" );
+	message.pushBack( OscTree( i ) );
+	message.pushBack( OscTree( f ) );
+	message.pushBack( OscTree( s ) );
+	message.pushBack( OscTree( b.getData(), b.getRowBytes() * b.getHeight() ) );
+	message.pushBack( OscTree( h ) );
+	message.pushBack( OscTree( d ) );
+
+	Buffer buffer = message.toBuffer();
+	OscTree fromBuffer( buffer );
+
+	vector<OscTree>::const_iterator childBegIter = fromBuffer.getChildren().cbegin();
+	vector<OscTree>::const_iterator childEndIter = fromBuffer.getChildren().cend();
+
+	for ( ; childBegIter != childEndIter; ++childBegIter ) {
+		if ( childBegIter->getTypeTag() == 'i' ) {
+			int32_t value = childBegIter->getValue<int32_t>();
+			console() << "original value: " << i << "\nfromBuffer value: " << value 
+				<< "\nequal? " << ( ( value == i ) ? "yes" : "no" ) << endl;
+		} else if ( childBegIter->getTypeTag() == 'f' ) {
+			float value = childBegIter->getValue<float>();
+			console() << "original value: " << f << "\nfromBuffer value: " << value 
+				<< "\nequal? " << ( ( value == f ) ? "yes" : "no" ) << endl;
+		} else if ( childBegIter->getTypeTag() == 's' ) {
+			string value = childBegIter->getValue<string>();
+			console() << "original value: " << s << "\nfromBuffer value: " << value 
+				<< "\nequal? " << ( ( value == s ) ? "yes" : "no" ) << endl;
+		} else if ( childBegIter->getTypeTag() == 'h' ) {
+			int64_t value = childBegIter->getValue<int64_t>();
+			console() << "original value: " << h << "\nfromBuffer value: " << value 
+				<< "\nequal? " << ( ( value == h ) ? "yes" : "no" ) << endl;
+		} else if ( childBegIter->getTypeTag() == 'd' ) {
+			double value = childBegIter->getValue<double>();
+			console() << "original value: " << d << "\nfromBuffer value: " << value 
+				<< "\nequal? " << ( ( value == d ) ? "yes" : "no" ) << endl;
+		}
+	}
+}
+
 void OscDevApp::write()
 {
-	if ( mSession && mSession->getSocket()->is_open() ) {
-		//OscTree message = OscTree::makeMessage( "/foo/bar/baz" );
-		//message.pushBack( OscTree( 3.1415f ) );
-		//message.pushBack( OscTree( mTestStr ) );
-		//message.pushBack( OscTree( 4096 ) );
+	if ( mClientSession && mClientSession->getSocket()->is_open() ) {
+		OscTree message = OscTree::makeMessage( "/foo/bar/baz" );
+		message.pushBack( OscTree( 3.14159f ) );
+		message.pushBack( OscTree( mTestStr ) );
+		message.pushBack( OscTree( 4096 ) );
 
-		//Buffer buffer = message.toBuffer();
-		Buffer buffer = UdpSession::stringToBuffer( mTestStr );
+		Buffer buffer = message.toBuffer();
+		mClientSession->write( buffer );
 
-		//mSession->write( buffer );
-		mSession->write( buffer );
+		//Buffer buffer = UdpSession::stringToBuffer( mTestStr );
+		//mClientSession->write( buffer );
 	}
 }
 
