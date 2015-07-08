@@ -33,16 +33,16 @@
 		C7FB19D6124BC0D70045AFD2 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7FB19D5124BC0D70045AFD2 /* AudioToolbox.framework */; };
 		00A66A361965AC8800B17EB3 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00A66A351965AC8800B17EB3 /* Accelerate.framework */; };
 		00748058165D41390024B57A /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 00748057165D41390024B57A /* assets */; };
-		7379CE5C2B8345BF85B0D7C6 /* OscDev_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 6CD053A9CA874DC498CB05D7 /* OscDev_Prefix.pch */; };
-		94EC5535CDD74D6785B15920 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 805AED319E7A4068A3D5AD00 /* LaunchScreen.xib */; };
-		39B5F31208F747408C5A887F /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 39CA2CDEEA5140DCAF660894 /* Images.xcassets */; };
-		852E90B0DAD145BAA0A7BE51 /* CinderApp_ios.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E32AB4449D74B948FDA6C06 /* CinderApp_ios.png */; };
-		F3254E4B32624172AC79EFF6 /* Resources.h in Headers */ = {isa = PBXBuildFile; fileRef = F429D87137CE46DDBBCE0409 /* Resources.h */; };
-		143C2EC057654B4891FB9EA7 /* OscDevApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1B80EF74303A494CAB0D475E /* OscDevApp.cpp */; };
+		AA9D503A9FDC44AD80012B36 /* OscDevServer_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = C7A18FFFC7274E6D827A2552 /* OscDevServer_Prefix.pch */; };
+		9C4459030D884185A2A66674 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7ABF8AAE13414FB6BD5DFA85 /* LaunchScreen.xib */; };
+		742163FE67694E4C806F96BC /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F658629E7CF043FEB7A51A6D /* Images.xcassets */; };
+		04FA2C9D934B4D8DBA863AAF /* CinderApp_ios.png in Resources */ = {isa = PBXBuildFile; fileRef = 470A13A26414462185F06BD6 /* CinderApp_ios.png */; };
+		F2540100DCAA4D859196C3AD /* Resources.h in Headers */ = {isa = PBXBuildFile; fileRef = 6111435D6AE74F7EB115093E /* Resources.h */; };
+		48A3D89D2237400A83768875 /* OscDevServerApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F04F9BDDAE42479D96558065 /* OscDevServerApp.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		00692BCF14FF149000D0A05E /* OscDev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OscDev.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		00692BCF14FF149000D0A05E /* OscDevServer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OscDevServer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0087D25412CD809F002CD69F /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		00CFDF6A1138442D0091E310 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		00CFDF6A1138442D0091FFFF /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
@@ -57,13 +57,13 @@
 		C7FB19D5124BC0D70045AFD2 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		00A66A351965AC8800B17EB3 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		00748057165D41390024B57A /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = assets; path = ../assets; sourceTree = "<group>"; };
-		1B80EF74303A494CAB0D475E /* OscDevApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../src/OscDevApp.cpp; sourceTree = "<group>"; name = OscDevApp.cpp; };
-		F429D87137CE46DDBBCE0409 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../include/Resources.h; sourceTree = "<group>"; name = Resources.h; };
-		7E32AB4449D74B948FDA6C06 /* CinderApp_ios.png */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = ../resources/CinderApp_ios.png; sourceTree = "<group>"; name = CinderApp_ios.png; };
-		39CA2CDEEA5140DCAF660894 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = Images.xcassets; sourceTree = "<group>"; name = Images.xcassets; };
-		805AED319E7A4068A3D5AD00 /* LaunchScreen.xib */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = LaunchScreen.xib; sourceTree = "<group>"; name = LaunchScreen.xib; };
-		2609FC3C59674FE2BBCC41FA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; name = Info.plist; };
-		6CD053A9CA874DC498CB05D7 /* OscDev_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = OscDev_Prefix.pch; sourceTree = "<group>"; name = OscDev_Prefix.pch; };
+		F04F9BDDAE42479D96558065 /* OscDevServerApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../src/OscDevServerApp.cpp; sourceTree = "<group>"; name = OscDevServerApp.cpp; };
+		6111435D6AE74F7EB115093E /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../include/Resources.h; sourceTree = "<group>"; name = Resources.h; };
+		470A13A26414462185F06BD6 /* CinderApp_ios.png */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = ../resources/CinderApp_ios.png; sourceTree = "<group>"; name = CinderApp_ios.png; };
+		F658629E7CF043FEB7A51A6D /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = Images.xcassets; sourceTree = "<group>"; name = Images.xcassets; };
+		7ABF8AAE13414FB6BD5DFA85 /* LaunchScreen.xib */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = LaunchScreen.xib; sourceTree = "<group>"; name = LaunchScreen.xib; };
+		31A2253F6A6D475E8B960939 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; name = Info.plist; };
+		C7A18FFFC7274E6D827A2552 /* OscDevServer_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = OscDevServer_Prefix.pch; sourceTree = "<group>"; name = OscDevServer_Prefix.pch; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,7 +105,7 @@
 		00692BD014FF149000D0A05E /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				00692BCF14FF149000D0A05E /* OscDev.app */,
+				00692BCF14FF149000D0A05E /* OscDevServer.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -140,8 +140,8 @@
 		99692BD914FF149000D0A05F /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				F429D87137CE46DDBBCE0409 /* Resources.h */,
-				6CD053A9CA874DC498CB05D7 /* OscDev_Prefix.pch */,
+				6111435D6AE74F7EB115093E /* Resources.h */,
+				C7A18FFFC7274E6D827A2552 /* OscDevServer_Prefix.pch */,
 			);
 			name = Headers;
 			sourceTree = "<group>";
@@ -149,7 +149,7 @@
 		00692BD914FF149000D0A05E /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				1B80EF74303A494CAB0D475E /* OscDevApp.cpp */,
+				F04F9BDDAE42479D96558065 /* OscDevServerApp.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -158,10 +158,10 @@
 			isa = PBXGroup;
 			children = (
 				00748057165D41390024B57A /* assets */,
-				7E32AB4449D74B948FDA6C06 /* CinderApp_ios.png */,
-				39CA2CDEEA5140DCAF660894 /* Images.xcassets */,
-				805AED319E7A4068A3D5AD00 /* LaunchScreen.xib */,
-				2609FC3C59674FE2BBCC41FA /* Info.plist */,
+				470A13A26414462185F06BD6 /* CinderApp_ios.png */,
+				F658629E7CF043FEB7A51A6D /* Images.xcassets */,
+				7ABF8AAE13414FB6BD5DFA85 /* LaunchScreen.xib */,
+				31A2253F6A6D475E8B960939 /* Info.plist */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -169,9 +169,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		00692BCE14FF149000D0A05E /* OscDev */ = {
+		00692BCE14FF149000D0A05E /* OscDevServer */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 00692BF514FF149000D0A05E /* Build configuration list for PBXNativeTarget "OscDev" */;
+			buildConfigurationList = 00692BF514FF149000D0A05E /* Build configuration list for PBXNativeTarget "OscDevServer" */;
 			buildPhases = (
 				00692BCB14FF149000D0A05E /* Sources */,
 				00692BCC14FF149000D0A05E /* Frameworks */,
@@ -181,9 +181,9 @@
 			);
 			dependencies = (
 			);
-			name = OscDev;
-			productName = OscDev;
-			productReference = 00692BCF14FF149000D0A05E /* OscDev.app */;
+			name = OscDevServer;
+			productName = OscDevServer;
+			productReference = 00692BCF14FF149000D0A05E /* OscDevServer.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -191,7 +191,7 @@
 /* Begin PBXProject section */
 		00692BC614FF149000D0A05E /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = 00692BC914FF149000D0A05E /* Build configuration list for PBXProject "OscDev" */;
+			buildConfigurationList = 00692BC914FF149000D0A05E /* Build configuration list for PBXProject "OscDevServer" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -203,7 +203,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				00692BCE14FF149000D0A05E /* OscDev */,
+				00692BCE14FF149000D0A05E /* OscDevServer */,
 			);
 		};
 /* End PBXProject section */
@@ -214,9 +214,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				00748058165D41390024B57A /* assets in Resources */,
-				852E90B0DAD145BAA0A7BE51 /* CinderApp_ios.png in Resources */,
-				39B5F31208F747408C5A887F /* Images.xcassets in Resources */,
-				94EC5535CDD74D6785B15920 /* LaunchScreen.xib in Resources */,
+				04FA2C9D934B4D8DBA863AAF /* CinderApp_ios.png in Resources */,
+				742163FE67694E4C806F96BC /* Images.xcassets in Resources */,
+				9C4459030D884185A2A66674 /* LaunchScreen.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -227,7 +227,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				143C2EC057654B4891FB9EA7 /* OscDevApp.cpp in Sources */,
+				48A3D89D2237400A83768875 /* OscDevServerApp.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -301,7 +301,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "OscDev_Prefix.pch";
+				GCC_PREFIX_HEADER = "OscDevServer_Prefix.pch";
 				INFOPLIST_FILE = "Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
@@ -320,7 +320,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "OscDev_Prefix.pch";
+				GCC_PREFIX_HEADER = "OscDevServer_Prefix.pch";
 				INFOPLIST_FILE = "Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
@@ -338,7 +338,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		00692BC914FF149000D0A05E /* Build configuration list for PBXProject "OscDev" */ = {
+		00692BC914FF149000D0A05E /* Build configuration list for PBXProject "OscDevServer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				00692BF314FF149000D0A05E /* Debug */,
@@ -347,7 +347,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		00692BF514FF149000D0A05E /* Build configuration list for PBXNativeTarget "OscDev" */ = {
+		00692BF514FF149000D0A05E /* Build configuration list for PBXNativeTarget "OscDevServer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				00692BF614FF149000D0A05E /* Debug */,

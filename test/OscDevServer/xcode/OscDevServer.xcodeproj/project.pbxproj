@@ -18,10 +18,10 @@
 		00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995591B128DF400A5C623 /* IOSurface.framework */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		C92F869AD6A843A3A15E5584 /* OscDev_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = E55A4D677862481C95A6B71C /* OscDev_Prefix.pch */; };
-		FBA2465B09124745BC990DCB /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 9597ADEFE4174EF7B8F5DF20 /* CinderApp.icns */; };
-		8926260B7EDA40E08441344B /* Resources.h in Headers */ = {isa = PBXBuildFile; fileRef = CE5030996DF34F62B1AB4FD0 /* Resources.h */; };
-		932844D758B74B3690D2A6CC /* OscDevApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9936740E4CBC4707AC7FDCB5 /* OscDevApp.cpp */; };
+		05071C9E639646AFB9C3C9D2 /* OscDevServer_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 5015595B1B0540CFB1370A87 /* OscDevServer_Prefix.pch */; };
+		D9FE8434A86E45CB8C8D2BC8 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = D7BFAA8C9C4148F98A409746 /* CinderApp.icns */; };
+		F331BF6CB68A4C339710974A /* Resources.h in Headers */ = {isa = PBXBuildFile; fileRef = 9926232315B2457FAD187370 /* Resources.h */; };
+		85FB480129474373A470BF60 /* OscDevServerApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9933AA0FA2E4EAD899DC34A /* OscDevServerApp.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,12 +38,12 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
-		8D1107320486CEB800E47090 /* OscDev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OscDev.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		9936740E4CBC4707AC7FDCB5 /* OscDevApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../src/OscDevApp.cpp; sourceTree = "<group>"; name = OscDevApp.cpp; };
-		CE5030996DF34F62B1AB4FD0 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../include/Resources.h; sourceTree = "<group>"; name = Resources.h; };
-		9597ADEFE4174EF7B8F5DF20 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
-		424E2394178247B694488F9B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; name = Info.plist; };
-		E55A4D677862481C95A6B71C /* OscDev_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = OscDev_Prefix.pch; sourceTree = "<group>"; name = OscDev_Prefix.pch; };
+		8D1107320486CEB800E47090 /* OscDevServer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OscDevServer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F9933AA0FA2E4EAD899DC34A /* OscDevServerApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../src/OscDevServerApp.cpp; sourceTree = "<group>"; name = OscDevServerApp.cpp; };
+		9926232315B2457FAD187370 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../include/Resources.h; sourceTree = "<group>"; name = Resources.h; };
+		D7BFAA8C9C4148F98A409746 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
+		57466BDB71954AB1B2F127D7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; name = Info.plist; };
+		5015595B1B0540CFB1370A87 /* OscDevServer_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = OscDevServer_Prefix.pch; sourceTree = "<group>"; name = OscDevServer_Prefix.pch; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,7 +71,7 @@
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				9936740E4CBC4707AC7FDCB5 /* OscDevApp.cpp */,
+				F9933AA0FA2E4EAD899DC34A /* OscDevServerApp.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -106,12 +106,12 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8D1107320486CEB800E47090 /* OscDev.app */,
+				8D1107320486CEB800E47090 /* OscDevServer.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		29B97314FDCFA39411CA2CEA /* OscDev */ = {
+		29B97314FDCFA39411CA2CEA /* OscDevServer */ = {
 			isa = PBXGroup;
 			children = (
 				01B97315FEAEA392516A2CEA /* Blocks */,
@@ -121,7 +121,7 @@
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 			);
-			name = OscDev;
+			name = OscDevServer;
 			sourceTree = "<group>";
 		};
 		01B97315FEAEA392516A2CEA /* Blocks */ = {
@@ -134,8 +134,8 @@
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				CE5030996DF34F62B1AB4FD0 /* Resources.h */,
-				E55A4D677862481C95A6B71C /* OscDev_Prefix.pch */,
+				9926232315B2457FAD187370 /* Resources.h */,
+				5015595B1B0540CFB1370A87 /* OscDevServer_Prefix.pch */,
 			);
 			name = Headers;
 			sourceTree = "<group>";
@@ -143,8 +143,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				9597ADEFE4174EF7B8F5DF20 /* CinderApp.icns */,
-				424E2394178247B694488F9B /* Info.plist */,
+				D7BFAA8C9C4148F98A409746 /* CinderApp.icns */,
+				57466BDB71954AB1B2F127D7 /* Info.plist */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -161,9 +161,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8D1107260486CEB800E47090 /* OscDev */ = {
+		8D1107260486CEB800E47090 /* OscDevServer */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "OscDev" */;
+			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "OscDevServer" */;
 			buildPhases = (
 				8D1107290486CEB800E47090 /* Resources */,
 				8D11072C0486CEB800E47090 /* Sources */,
@@ -173,10 +173,10 @@
 			);
 			dependencies = (
 			);
-			name = OscDev;
+			name = OscDevServer;
 			productInstallPath = "$(HOME)/Applications";
-			productName = OscDev;
-			productReference = 8D1107320486CEB800E47090 /* OscDev.app */;
+			productName = OscDevServer;
+			productReference = 8D1107320486CEB800E47090 /* OscDevServer.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -184,7 +184,7 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "OscDev" */;
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "OscDevServer" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -194,11 +194,11 @@
 				French,
 				German,
 			);
-			mainGroup = 29B97314FDCFA39411CA2CEA /* OscDev */;
+			mainGroup = 29B97314FDCFA39411CA2CEA /* OscDevServer */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8D1107260486CEB800E47090 /* OscDev */,
+				8D1107260486CEB800E47090 /* OscDevServer */,
 			);
 		};
 /* End PBXProject section */
@@ -208,7 +208,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FBA2465B09124745BC990DCB /* CinderApp.icns in Resources */,
+				D9FE8434A86E45CB8C8D2BC8 /* CinderApp.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -219,7 +219,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				932844D758B74B3690D2A6CC /* OscDevApp.cpp in Sources */,
+				85FB480129474373A470BF60 /* OscDevServerApp.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -240,13 +240,13 @@
 					"$(inherited)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = OscDev_Prefix.pch;
+				GCC_PREFIX_HEADER = OscDevServer_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder_d.a\"";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = OscDev;
+				PRODUCT_NAME = OscDevServer;
 				SYMROOT = ./build;
 				WRAPPER_EXTENSION = app;
 			};
@@ -267,13 +267,13 @@
 					"$(inherited)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = OscDev_Prefix.pch;
+				GCC_PREFIX_HEADER = OscDevServer_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder.a\"";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = OscDev;
+				PRODUCT_NAME = OscDevServer;
 				STRIP_INSTALLED_PRODUCT = YES;
 				SYMROOT = ./build;
 				WRAPPER_EXTENSION = app;
@@ -317,7 +317,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "OscDev" */ = {
+		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "OscDevServer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4B08A954540054247B /* Debug */,
@@ -326,7 +326,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "OscDev" */ = {
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "OscDevServer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,
