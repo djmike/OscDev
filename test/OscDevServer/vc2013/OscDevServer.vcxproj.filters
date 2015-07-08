@@ -22,6 +22,12 @@
     <Filter Include="Blocks\Cinder-Asio\src">
       <UniqueIdentifier>{40144fa9-b48f-44d5-91bc-51c39c3834ee}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Blocks\OscTree">
+      <UniqueIdentifier>{57d09217-85ca-414f-82cf-c05b8509c716}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\OscTree\src">
+      <UniqueIdentifier>{6e383203-5ae6-4141-b1a1-ce6e4d21a6c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\OscDevServerApp.cpp">
@@ -65,6 +71,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\blocks\Cinder-Asio\src\WaitTimer.cpp">
       <Filter>Blocks\Cinder-Asio\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\OscTree.cpp">
+      <Filter>Blocks\OscTree\src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -139,6 +148,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\blocks\Cinder-Asio\src\WaitTimerEventHandlerInterface.h">
       <Filter>Blocks\Cinder-Asio\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\OscTree.h">
+      <Filter>Blocks\OscTree\src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -45,6 +45,7 @@ private:
 
 	ci::Surface8uRef			mSurface;
 	ci::Surface8uRef			mSurfaceOsc;
+	ci::Surface8uRef			mSurfaceDiff;
 
 	ci::params::InterfaceGlRef	mParams;
 	float						mFps;
@@ -63,7 +64,7 @@ using namespace ci::app;
 using namespace std;
 
 template<typename T>
-string getTestOutput( const string &testType, const T &v, const OscTree &oscAttr, const BufferRef &buffer )
+inline string getTestOutput( const string &testType, const T &v, const OscTree &oscAttr, const BufferRef &buffer )
 {
 	stringstream ss;
 
@@ -121,15 +122,26 @@ void OscDevApp::draw()
 	gl::clear( Color( 0, 0, 0 ) );
 
 	if ( mTexture ) {
-		gl::draw( mTexture, ivec2( 10, 160 ) );
+		gl::draw( mTexture, vec2( 10.0f, 240.0f ) );
 	}
 
+	vec2 windowSize = vec2( getWindowSize() );
+	vec2 surfacePos;
 	if ( mSurface ) {
-		gl::draw( gl::Texture::create( *mSurface ) );
+		surfacePos.x = windowSize.x - 320.0f * 3.0f - 20.0f;
+		gl::draw( gl::Texture::create( *mSurface ), surfacePos );
 	}
 
 	if ( mSurfaceOsc ) {
-		gl::draw( gl::Texture::create( *mSurfaceOsc ), vec2( 330.0f, 0.0f ) );
+		surfacePos.x = windowSize.x - 320.0f * 2.0f - 10.0f;
+		gl::draw( gl::Texture::create( *mSurfaceOsc ), surfacePos );
+	}
+
+	if ( mSurfaceDiff ) {
+		surfacePos.x = windowSize.x - 320.0f;
+		gl::draw( gl::Texture::create( *mSurfaceDiff ), surfacePos );
+		gl::ScopedColor scopedColor( Colorf( 1.0f, 0.0f, 1.0f ) );
+		gl::drawStrokedRect( Rectf( surfacePos, surfacePos + vec2( 320.0f, 240.0f ) ), 3.0f );
 	}
 
 	mParams->draw();
@@ -240,6 +252,7 @@ void OscDevApp::setup()
 		testFloat();
 		testDouble();
 		testBlobArray();
+		testBlobImage();
 	};
 
 	mParams = params::InterfaceGl::create( "Params", ivec2( 240, 120 ) );
@@ -257,9 +270,12 @@ void OscDevApp::setup()
 
 void OscDevApp::testMessage()
 {
-	OscTree message = OscTree::makeMessage( "/foo/bar/baz" );
-	OscTree valueInt = OscTree( 4096 );
-	OscTree valueStr = OscTree( "Hello, OSC" );
+	string addr = "/foo/bar/baz";
+	int32_t attrInt = 4096;
+	string attrStr = "Hello, OSC";
+	OscTree message = OscTree::makeMessage( addr );
+	OscTree valueInt = OscTree( attrInt );
+	OscTree valueStr = OscTree( attrStr );
 
 	message.pushBack( valueInt );
 	message.pushBack( valueStr );
@@ -269,26 +285,55 @@ void OscDevApp::testMessage()
 	size_t bufferSize		= messageBuffer->getSize();
 
 	CI_LOG_V(  "Test message: " 
+		<< "\n\tmessage address: " << message.getAddress() 
+		<< "\n\tmessage child int32_t: " << message.getChildren()[ 0 ].getValue<int32_t>() 
+		<< "\n\tmessage child string: " << message.getChildren()[ 1 ].getValue<string>() 
 		<< "\n\tbuffer alloc size: " << allocSize 
 		<< "\n\tbuffer size: " << bufferSize );
+
+	bool passed = ( message.getAddress() == addr && 
+		message.getChildren()[ 0 ].getValue<int32_t>() == attrInt && 
+		message.getChildren()[ 1 ].getValue<string>() == attrStr );
+
+	string result = "Test message ";
+	if ( passed ) {
+		result += "PASSED";
+	} else {
+		result += "FAILED";
+		CI_LOG_F( "<<< FATAL Test Failure >>> " + result );
+	}
+	mText.push_back( result );
 }
 
 void OscDevApp::testInt32()
 {
 	int32_t v = 2048;
-	OscTree testInt32 = OscTree( v );
-	BufferRef bufferInt32 = testInt32.toBuffer();
+	OscTree attrInt32 = OscTree( v );
+	BufferRef bufferInt32 = attrInt32.toBuffer();
 	void* data = bufferInt32->getData();
 	int32_t value = *reinterpret_cast<int32_t *>( data );
 	
 	//CI_LOG_V(  "Test int32_t" 
-	//	<< "\n\tdata: " << testInt32.getValue()->getData() 
-	//	<< "\n\tvalue: " << testInt32.getValue<int32_t>() 
-	//	<< "\n\ttype tag: " << testInt32.getTypeTag() 
+	//	<< "\n\tdata: " << attrInt32.getValue()->getData() 
+	//	<< "\n\tvalue: " << attrInt32.getValue<int32_t>() 
+	//	<< "\n\ttype tag: " << attrInt32.getTypeTag() 
 	//	<< "\n\tv: " << v 
 	//	<< "\n\tbuffer value: " << value );
 
-	CI_LOG_V( getTestOutput<int32_t>( "int32_t", v, testInt32, bufferInt32 ) );
+	CI_LOG_V( getTestOutput<int32_t>( "int32_t", v, attrInt32, bufferInt32 ) );
+
+	bool passed = ( ( attrInt32.getValue<int32_t>() == v ) && 
+		( *reinterpret_cast<int32_t *>( attrInt32.getValue()->getData() ) == v ) && 
+		( *reinterpret_cast<int32_t *>( bufferInt32->getData() ) == v ) );
+
+	string result = "Test int32_t ";
+	if ( passed ) {
+		result += "PASSED";
+	} else {
+		result += "FAILED";
+		CI_LOG_F( "<<< FATAL Test Failure >>> " + result );
+	}
+	mText.push_back( result );
 }
 
 void OscDevApp::testString()
@@ -298,6 +343,21 @@ void OscDevApp::testString()
 	BufferRef bufferString = attrString.toBuffer();
 
 	CI_LOG_V( getTestOutput<string>( "string", v, attrString, bufferString ) );
+
+
+	string oscAttrValue			= attrString.getValue<string>();
+	string oscAttrBufferValue	= reinterpret_cast<const char *>( attrString.getValue()->getData() );
+	string oscBufferValue		= reinterpret_cast<const char *>( bufferString->getData() );
+	bool passed					= ( oscAttrValue == v && oscBufferValue == v && oscAttrBufferValue == v );
+
+	string result = "Test string ";
+	if ( passed ) {
+		result += "PASSED";
+	} else {
+		result += "FAILED";
+		CI_LOG_F( "<<< FATAL Test Failure >>> " + result );
+	}
+	mText.push_back( result );
 }
 
 void OscDevApp::testBlobImage()
@@ -337,6 +397,37 @@ void OscDevApp::testBlobImage()
 
 	mSurfaceOsc = Surface8u::create( 320, 240, false, SurfaceChannelOrder::RGB );
 	memcpy( mSurfaceOsc->getData(), testBlob.getValue()->getData(), testBlob.getValue()->getSize() );
+
+	mSurfaceDiff = Surface8u::create( 320, 240, false, SurfaceChannelOrder::RGB );
+
+	Surface8u::ConstIter iterSrc	= mSurface->getIter();
+	Surface8u::ConstIter iterOsc	= mSurfaceOsc->getIter();
+	Surface8u::Iter iterDiff		= mSurfaceDiff->getIter();
+
+	bool passed = true;
+	int8_t dr, dg, db;
+	while ( iterSrc.line() && iterOsc.line() && iterDiff.line() ) {
+		while ( iterSrc.pixel() && iterOsc.pixel() && iterDiff.pixel() ) {
+			dr = iterSrc.r() - iterOsc.r();
+			dg = iterSrc.g() - iterOsc.g();
+			db = iterSrc.b() - iterOsc.b();
+
+			passed = ( dr == 0 && dg == 0 && db == 0 );
+
+			iterDiff.r() = 255 - ( ( dr < 0 ) ? -dr : dr );
+			iterDiff.g() = 255 - ( ( dg < 0 ) ? -dg : dg );
+			iterDiff.b() = 255 - ( ( db < 0 ) ? -db : dg );
+		}
+	}
+
+	string result = "Test blob image ";
+	if ( passed ) {
+		result += "PASSED";
+	} else {
+		result += "FAILED";
+		CI_LOG_F( "<<< FATAL Test Failure >>> " + result );
+	}
+	mText.push_back( result );
 }
 
 void OscDevApp::testBlobArray()
@@ -361,9 +452,11 @@ void OscDevApp::testBlobArray()
 	// Read back the blob from the OscTree and make sure it matches the array above
 	uint8_t * data = reinterpret_cast<uint8_t *>( testBlobArray.getValue()->getData() );
 	stringstream output;
+	bool passed = true;
 	for ( size_t i = 0; i < 5; ++i ) {
 		output << "data[ " << i << " ]: " << int32_t( data[ i ] ) << "\n";
-		if ( data[ i ] != v[ i ] ) {
+		passed = ( data[ i ] == v[ i ] );
+		if ( !passed ) {
 			CI_LOG_E( "<<< ERROR >>> Array values do not match up\n\tindex: " << i 
 				<< "\n\tdata: " << int32_t( data[ i ] ) 
 				<< "\n\tv: " << int32_t( v[ i ] ) );
@@ -371,6 +464,14 @@ void OscDevApp::testBlobArray()
 	}
 	CI_LOG_V( "data output: \n" << output.str() );
 
+	string result = "Test blob array uint8_t ";
+	if ( passed ) {
+		result += "PASSED";
+	} else {
+		result += "FAILED";
+		CI_LOG_F( "<<< FATAL Test Failure >>> " + result );
+	}
+	mText.push_back( result );
 
 	array<double, 10> arrDoubles;
 	for ( auto& d : arrDoubles ) {
@@ -392,15 +493,29 @@ void OscDevApp::testBlobArray()
 	double * dataDbl = reinterpret_cast<double *>( testBlobArrayDbls.getValue()->getData() );
 	output.str( "" );
 	output.clear();
+	passed = true;
 	for ( size_t i = 0; i < 10; ++i ) {
 		output << "data[ " << i << " ]: " << dataDbl[ i ] << "\n";
-		if ( dataDbl[ i ] != arrDoubles[ i ] ) {
+		passed = ( dataDbl[ i ] == arrDoubles[ i ] );
+		if ( !passed ) {
 			CI_LOG_E( "<<< ERROR >>> Array values do not match up\n\tindex: " << i 
 				<< "\n\tdataDbl: " << dataDbl[ i ] 
 				<< "\n\tarrDoubles: " << arrDoubles[ i ] );
 		}
 	}
 	CI_LOG_V( "data output: \n" << output.str() );
+
+	result = "Test blob array double ";
+	if ( passed ) {
+		result += "PASSED";
+	} else {
+		result += "FAILED";
+		CI_LOG_F( "<<< FATAL Test Failure >>> " + result );
+	}
+	mText.push_back( result );
+
+	// TODO: 
+	// - test other types of blob data
 }
 
 void OscDevApp::testInt64()
@@ -410,6 +525,19 @@ void OscDevApp::testInt64()
 	BufferRef bufferInt64 = attrInt64.toBuffer();
 
 	CI_LOG_V( getTestOutput<int64_t>( "int64_t", v, attrInt64, bufferInt64 ) );
+
+	bool passed = ( ( attrInt64.getValue<int64_t>() == v ) && 
+		( *reinterpret_cast<int64_t *>( attrInt64.getValue()->getData() ) == v ) && 
+		( *reinterpret_cast<int64_t *>( bufferInt64->getData() ) == v ) );
+
+	string result = "Test int64_t ";
+	if ( passed ) {
+		result += "PASSED";
+	} else {
+		result += "FAILED";
+		CI_LOG_F( "<<< FATAL Test Failure >>> " + result );
+	}
+	mText.push_back( result );
 }
 
 void OscDevApp::testFloat()
@@ -419,6 +547,19 @@ void OscDevApp::testFloat()
 	BufferRef bufferFloat = attrFloat.toBuffer();
 
 	CI_LOG_V( getTestOutput<float>( "float", v, attrFloat, bufferFloat ) );
+
+	bool passed = ( ( attrFloat.getValue<float>() == v ) && 
+		( *reinterpret_cast<float *>( attrFloat.getValue()->getData() ) == v ) && 
+		( *reinterpret_cast<float *>( bufferFloat->getData() ) == v ) );
+
+	string result = "Test float ";
+	if ( passed ) {
+		result += "PASSED";
+	} else {
+		result += "FAILED";
+		CI_LOG_F( "<<< FATAL Test Failure >>> " + result );
+	}
+	mText.push_back( result );
 }
 
 void OscDevApp::testDouble()
@@ -428,6 +569,19 @@ void OscDevApp::testDouble()
 	BufferRef bufferDouble = attrDouble.toBuffer();
 
 	CI_LOG_V( getTestOutput<double>( "double", v, attrDouble, bufferDouble ) );
+
+	bool passed = ( ( attrDouble.getValue<double>() == v ) && 
+		( *reinterpret_cast<double *>( attrDouble.getValue()->getData() ) == v ) && 
+		( *reinterpret_cast<double *>( bufferDouble->getData() ) == v ) );
+
+	string result = "Test double ";
+	if ( passed ) {
+		result += "PASSED";
+	} else {
+		result += "FAILED";
+		CI_LOG_F( "<<< FATAL Test Failure >>> " + result );
+	}
+	mText.push_back( result );
 }
 
 void OscDevApp::update()
@@ -458,7 +612,76 @@ void OscDevApp::write()
 		//message.pushBack( OscTree( mTestStr ) );
 		//message.pushBack( OscTree( 4096 ) );
 
-		mUdpSession->write( UdpSession::stringToBuffer( mRequest ) );
+		int32_t valueInt32 = 42;
+		string valueString = "Testing 1, 2, 3. Testing.";
+		float valueFloat = static_cast<float>( M_PI );
+		array<int32_t, 4> valueBlobArray = { 1001, 1002, 1003, 1004 };
+
+		OscTree attrInt32( valueInt32 );
+		OscTree attrString( valueString );
+		OscTree attrFloat( valueFloat );
+		OscTree attrBlobArray( valueBlobArray.data(), valueBlobArray.size() * sizeof( int32_t ) );
+
+		mSurface = Surface8u::create( 320, 240, false, SurfaceChannelOrder::RGB );
+		ip::fill( mSurface.get(), Colorf( 1.0f, 0.0f, 0.0f ) );
+
+		Perlin p = Perlin( 6 );
+		vec2 pos;
+		const vec2 noiseScale( 0.01f, 0.01f );
+		auto iter = mSurface->getIter();
+		while ( iter.line() ) {
+			while ( iter.pixel() ) {
+				pos = vec2( iter.getPos() );
+				iter.g() = static_cast<uint8_t>( 255.0f * p.fBm( pos * noiseScale ) );
+			}
+		}
+
+		OscTree attrBlobImage = OscTree( mSurface->getData(), mSurface->getRowBytes() * mSurface->getHeight() );
+
+		OscTree message = OscTree::makeMessage( "/foo/bar/baz" );
+		message.pushBack( attrInt32 );
+		message.pushBack( attrString );
+		message.pushBack( attrFloat );
+		message.pushBack( attrBlobArray );
+		message.pushBack( attrBlobImage );
+
+		//mUdpSession->write( UdpSession::stringToBuffer( mRequest ) );
+		BufferRef messageBuffer = message.toBuffer();
+		size_t origDataSize = messageBuffer->getSize();
+		size_t origAllocSize = messageBuffer->getAllocatedSize();
+
+		Buffer compressedBuffer = compressBuffer( *messageBuffer );
+		messageBuffer = Buffer::create( compressedBuffer.getData(), compressedBuffer.getSize() );
+
+		CI_LOG_I( "Compressed buffer: " 
+			<< "\n\toriginal data size: " << origDataSize 
+			<< "\n\toriginal alloc size: " << origAllocSize 
+			<< "\n\tcompressed data size: " << messageBuffer->getSize() 
+			<< "\n\tcompressed alloc size: " << messageBuffer->getAllocatedSize() );
+
+		mUdpSession->write( messageBuffer );
+
+		//const size_t kBufferSize = 501;
+		//unique_ptr<uint8_t[]> data( new uint8_t[ kBufferSize ]() );
+		//auto data2 = make_unique<uint8_t[]>( kBufferSize );
+		//OscTree attrBlob2 = OscTree( data2.get(), kBufferSize * sizeof( uint8_t ) );
+
+		//// addr: 4
+		//// type tag: 4
+		//// blob header: 4
+		//// blob: 504
+
+		//char addr[] = "/a";
+		//OscTree message2 = OscTree::makeMessage( addr );
+		//message2.pushBack( attrBlob2 );
+
+		//auto buffer2 = message2.toBuffer();
+
+		//CI_LOG_I( "addr size: " << sizeof( addr ) );
+		//CI_LOG_I( "blob size: " << attrBlob2.getValue()->getSize() );
+		//CI_LOG_I( "buffer2 size: " << buffer2->getSize() );
+
+		//mUdpSession->write( buffer2 );
 	} else {
 		mText.push_back( "Connecting to: " + mHost + ":" + to_string( mPort ) );
 		mUdpClient->connect( mHost, static_cast<uint16_t>( mPort ) );

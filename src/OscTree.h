@@ -124,6 +124,9 @@ public:
 	//! Converts entire OscTree structure to binary data based on OSC spec
 	ci::BufferRef		toBuffer() const;
 
+	//! Returns the address, applies to OscTrees that represent OSC Messages
+	const std::string&	getAddress() const { return mAddress; };
+
 	//! Sets the address, applies to OscTrees that represent OSC Messages
 	void				setAddress( const std::string& address );
 
