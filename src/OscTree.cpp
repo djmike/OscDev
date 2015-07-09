@@ -22,22 +22,22 @@ size_t ceil4( size_t size )
 	return size + 4 - remainder;
 }
 
-void padWithZeroes( Buffer& buffer, size_t offset, size_t length )
+void padWithZeroes( BufferRef& buffer, size_t offset, size_t length )
 {
-	uint8_t* data	= reinterpret_cast<uint8_t*>( buffer.getData() );
+	uint8_t* data	= reinterpret_cast<uint8_t*>( buffer->getData() );
 	data			+= offset;
 	
 	memset( data, 0, length );
 }
 
-void padWithZeroes( Buffer& buffer )
+void padWithZeroes( BufferRef& buffer )
 {
-	size_t oldSize		= buffer.getDataSize();
+	size_t oldSize		= buffer->getAllocatedSize();
 	size_t newSize		= ceil4( oldSize );
 	size_t diff			= newSize - oldSize;
 	
 	if ( diff > 0 ) {
-		buffer.resize( newSize );
+		buffer->resize( newSize );
 		padWithZeroes( buffer, oldSize, diff );
 	}
 }
@@ -59,12 +59,12 @@ OscTree::OscTree()
 	init();
 }
 
-OscTree::OscTree( Buffer buffer )
+OscTree::OscTree( const BufferRef& buffer )
 {
 	init();
 	// create OscTree from binary data assuming
 	// binary data is structed based on the OSC spec
-	const char* data = reinterpret_cast<const char*>( buffer.getData() );
+	const char* data = reinterpret_cast<const char*>( buffer->getData() );
 
 	// check if the first byte denotes an OSC Bundle
 	// by looking for #bundle at the beginning
@@ -73,7 +73,7 @@ OscTree::OscTree( Buffer buffer )
 	} else {
 		// parse OSC Message
 		// parse out the address pattern
-		const char* pBlockEnd	= data + buffer.getDataSize();
+		const char* pBlockEnd	= data + buffer->getSize();
 		const char* pBegin		= data;
 		const char* pEnd		= (const char*)memchr( pBegin, 0, pBlockEnd - pBegin );
 
@@ -223,43 +223,43 @@ OscTree::OscTree( int32_t value, TypeTag typeTag )
 {
 	init();
 	
-	mValue		= Buffer( sizeof( int32_t ) );
-	mValue.copyFrom( &value, sizeof( int32_t ) );
+	mValue = Buffer::create( sizeof( int32_t ) );
+	mValue->copyFrom( &value, sizeof( int32_t ) );
 	
-	mTypeTag	= typeTag;
+	mTypeTag = typeTag;
 }
 
 OscTree::OscTree( float value, TypeTag typeTag )
 {
 	init();
 	
-	mValue		= Buffer( sizeof( float ) );
-	mValue.copyFrom( &value, sizeof( float ) );
+	mValue = Buffer::create( sizeof( float ) );
+	mValue->copyFrom( &value, sizeof( float ) );
 	
-	mTypeTag	= typeTag;
+	mTypeTag = typeTag;
 }
 
 OscTree::OscTree( const string& value, TypeTag typeTag )
 {
 	init();
 	
-	mValue		= Buffer( value.length() + 1 );
-	mValue.copyFrom( value.data(), mValue.getDataSize() );
+	mValue = Buffer::create( value.length() + 1 );
+	mValue->copyFrom( value.data(), mValue->getSize() );
 	
-	mTypeTag	= typeTag;
+	mTypeTag = typeTag;
 }
 /*
 OscTree::OscTree( const char* value, size_t numBytes, TypeTag typeTag )
 {
-	mTypeTag	= typeTag;
+	mTypeTag = typeTag;
 }
 
 OscTree::OscTree( const uint8_t* value, size_t numBytes, TypeTag typeTag )
 {
-	mValue		= Buffer( numBytes );
-	mValue.copyFrom( value, mValue.getDataSize() );
+	mValue = Buffer::create( numBytes );
+	mValue.copyFrom( value, mValue->getSize() );
 
-	mTypeTag	= typeTag;
+	mTypeTag = typeTag;
 }
 */
 OscTree::OscTree( const void* value, size_t numBytes, TypeTag typeTag )
@@ -275,31 +275,31 @@ OscTree::OscTree( const void* value, size_t numBytes, TypeTag typeTag )
 	
 	init();
 
-	mValue		= Buffer( numBytes );
-	mValue.copyFrom( value, mValue.getDataSize() );
+	mValue = Buffer::create( numBytes );
+	mValue->copyFrom( value, numBytes );
 
 	mTypeTag	= typeTag;
-	mBlobSize	= numBytes;
+	mBlobSize	= static_cast<int32_t>( numBytes );
 }
 
 OscTree::OscTree( int64_t value, TypeTag typeTag )
 {
 	init();
 	
-	mValue		= Buffer( sizeof( int64_t ) );
-	mValue.copyFrom( &value, sizeof( int64_t ) );
+	mValue = Buffer::create( sizeof( int64_t ) );
+	mValue->copyFrom( &value, mValue->getSize() );
 	
-	mTypeTag	= typeTag;
+	mTypeTag = typeTag;
 }
 
 OscTree::OscTree( double value, TypeTag typeTag )
 {
 	init();
 	
-	mValue		= Buffer( sizeof( double ) );
-	mValue.copyFrom( &value, sizeof( double ) );
+	mValue = Buffer::create( sizeof( double ) );
+	mValue->copyFrom( &value, mValue->getSize() );
 	
-	mTypeTag	= typeTag;
+	mTypeTag = typeTag;
 }
 
 //OscTree::OscTree( bool value )
@@ -313,7 +313,7 @@ OscTree::OscTree( TimeTag value, TypeTag typeTag )
 {
 	init();
 	
-	mTypeTag	= typeTag;
+	mTypeTag = typeTag;
 }
 
 OscTree OscTree::makeMessage( const std::string& address )
@@ -358,7 +358,7 @@ void OscTree::pushBack( const OscTree& child )
 	mChildren.back().mParent = this;
 }
 
-Buffer OscTree::toBuffer() const
+BufferRef OscTree::toBuffer() const
 {
 	// Turn the entire OscTree data structure into binary data
 	// if this contains children, it is either an OSC Message or an OSC Bundle
@@ -369,7 +369,7 @@ Buffer OscTree::toBuffer() const
 	// then write each bundle element into the buffer by specifying the
 	// element size in 8-bit bytes followed by the element data
 	
-	Buffer buffer( 4 );
+	BufferRef buffer = Buffer::create( 4 );
 	size_t dataSize = 0;
 	
 	// if this node doesn't have children, it represents
@@ -382,13 +382,13 @@ Buffer OscTree::toBuffer() const
 		
 		for ( const auto& child : mChildren ) {
 			if ( child.hasChildren() ) {
-				isBundle	= true;
+				isBundle = true;
 				break;
 			}
 		}
 		
 		if ( isBundle ) {
-			
+			// TODO: implement bundles
 		} else {
 			// write address pattern into buffer
 			appendAddress( buffer, dataSize );
@@ -399,6 +399,7 @@ Buffer OscTree::toBuffer() const
 		
 		for ( const auto& child : mChildren ) {
 			if ( child.hasChildren() ) {
+				// TODO: implement bundles
 				// this is a bundle
 				// child is a bundle or a message
 			} else {
@@ -418,7 +419,7 @@ Buffer OscTree::toBuffer() const
 	return buffer;
 }
 
-void OscTree::appendAddress( Buffer& buffer, size_t& dataSize ) const
+void OscTree::appendAddress( BufferRef& buffer, size_t& dataSize ) const
 {
 	size_t newDataSize			= mAddress.size() + 1; // add 1 for null terminator not included in string::size()
 	size_t newDataSizePadded	= ceil4( newDataSize );
@@ -426,9 +427,9 @@ void OscTree::appendAddress( Buffer& buffer, size_t& dataSize ) const
 	size_t newBufferDataSize	= oldDataSize + newDataSizePadded;
 	dataSize					= newBufferDataSize;
 	
-	buffer.resize( newBufferDataSize );
+	buffer->resize( newBufferDataSize );
 	
-	uint8_t* pBuffer			= reinterpret_cast<uint8_t*>( buffer.getData() );
+	uint8_t* pBuffer			= reinterpret_cast<uint8_t*>( buffer->getData() );
 	pBuffer						+= oldDataSize;
 	
 	memcpy( pBuffer, mAddress.data(), newDataSize );
@@ -441,7 +442,7 @@ void OscTree::appendAddress( Buffer& buffer, size_t& dataSize ) const
 	}
 }
 
-void OscTree::appendTypeTagString( Buffer& buffer, size_t& dataSize ) const
+void OscTree::appendTypeTagString( BufferRef& buffer, size_t& dataSize ) const
 {
 	size_t typeTagSize			= sizeof( TypeTag );
 	size_t newDataSize			= ( mChildren.size() + 1 + 1 ) * typeTagSize; // need to add 1 for the ',' and 1 for a '\0'
@@ -450,9 +451,9 @@ void OscTree::appendTypeTagString( Buffer& buffer, size_t& dataSize ) const
 	size_t newBufferDataSize	= oldDataSize + newDataSizePadded;
 	dataSize					= newBufferDataSize;
 	
-	buffer.resize( newBufferDataSize );
+	buffer->resize( newBufferDataSize );
 	
-	uint8_t* pBuffer	= reinterpret_cast<uint8_t*>( buffer.getData() );
+	uint8_t* pBuffer	= reinterpret_cast<uint8_t*>( buffer->getData() );
 	pBuffer				+= oldDataSize;
 	
 	memcpy( pBuffer, ",", typeTagSize );
@@ -474,22 +475,22 @@ void OscTree::appendTypeTagString( Buffer& buffer, size_t& dataSize ) const
 	}
 }
 
-void OscTree::appendValue( Buffer &buffer, size_t &dataSize ) const
+void OscTree::appendValue( BufferRef& buffer, size_t& dataSize ) const
 {
 	size_t extraByteSize = 0;
 	if ( getTypeTag() == 'b' ) {
 		extraByteSize = 4;
 	}
 
-	Buffer valueBuffer			= getValue();
-	size_t newDataSize			= valueBuffer.getDataSize() + extraByteSize;
+	BufferRef valueBuffer		= getValue();
+	size_t newDataSize			= valueBuffer->getSize() + extraByteSize;
 	size_t newDataSizePadded	= ceil4( newDataSize );
 	size_t oldDataSize			= dataSize;
 	size_t newBufferSize		= oldDataSize + newDataSizePadded;
 	
-	buffer.resize( newBufferSize );
+	buffer->resize( newBufferSize );
 	
-	uint8_t* pBuffer	= reinterpret_cast<uint8_t*>( buffer.getData() );
+	uint8_t* pBuffer	= reinterpret_cast<uint8_t*>( buffer->getData() );
 	pBuffer				+= oldDataSize;
 
 	// if this is a blob, a 32-bit int size
@@ -497,9 +498,9 @@ void OscTree::appendValue( Buffer &buffer, size_t &dataSize ) const
 	if ( getTypeTag() == 'b' ) {
 		memcpy( pBuffer, &mBlobSize, extraByteSize );
 		pBuffer			+= extraByteSize;
-		memcpy( pBuffer, valueBuffer.getData(), mBlobSize );
+		memcpy( pBuffer, valueBuffer->getData(), mBlobSize );
 	} else {
-		memcpy( pBuffer, valueBuffer.getData(), newDataSize );
+		memcpy( pBuffer, valueBuffer->getData(), newDataSize );
 	}
 	
 	size_t diff			= newDataSizePadded - newDataSize;
@@ -512,19 +513,19 @@ void OscTree::appendValue( Buffer &buffer, size_t &dataSize ) const
 
 // Appends the data from a buffer holding argument/value data to a buffer
 // The value data should already be zero padded
-void OscTree::appendValue( ci::Buffer& buffer, size_t& dataSize, const ci::Buffer& valueBuffer ) const
+void OscTree::appendValue( ci::BufferRef& buffer, size_t& dataSize, const ci::BufferRef& valueBuffer ) const
 {
-	size_t newDataSize		= valueBuffer.getDataSize();
+	size_t newDataSize		= valueBuffer->getSize();
 	size_t oldDataSize		= dataSize;
 	size_t newBufferSize	= dataSize + newDataSize;
 	dataSize				= newBufferSize;
 	
-	buffer.resize( newBufferSize );
+	buffer->resize( newBufferSize );
 	
-	uint8_t* pBuffer		= reinterpret_cast<uint8_t*>( buffer.getData() );
+	uint8_t* pBuffer		= reinterpret_cast<uint8_t*>( buffer->getData() );
 	pBuffer					+= oldDataSize;
 	
-	memcpy( pBuffer, valueBuffer.getData(), newDataSize );
+	memcpy( pBuffer, valueBuffer->getData(), newDataSize );
 }
 
 void OscTree::setAddress( const string& address )

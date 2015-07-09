@@ -3,29 +3,43 @@
 //
 //  Created by Michael Latzoni on 8/29/13.
 //
+//	Based on OSC Spec 1.0
 //
 
 #pragma once
 
+#include <chrono>
 #include <typeinfo>
 #include <string>
 #include <vector>
 #include "cinder/Buffer.h"
 #include "cinder/Exception.h"
-#include "boost/date_time/posix_time/posix_time.hpp"
 
 class OscTree
 {
 public:
-	typedef uint8_t								TypeTag;
-	typedef boost::posix_time::ptime			TimeTag;
-	typedef boost::posix_time::microsec_clock	TimeTagClock;
+	typedef uint8_t		TypeTag;
+
+	struct TimeTag
+	{
+		uint64_t mTimeTag;
+
+		TimeTag() 
+			: mTimeTag( 1 )
+		{
+		}
+		
+		explicit TimeTag( uint64_t timeTag ) 
+			: mTimeTag( timeTag ) 
+		{
+		}
+	};
 
 	//! Creates an empty OscTree
 	explicit OscTree();
 	
 	//! Creates an OscTree from binary data that is structred based on the OSC spec
-	explicit OscTree( ci::Buffer buffer );
+	explicit OscTree( const ci::BufferRef& buffer );
 	
 	//! Creates an OscTree that represents an OSC Message
 	//explicit OscTree( const std::string& address );
@@ -70,7 +84,7 @@ public:
 	static OscTree      makeMessage( const std::string& address );
 	
 	//! Creates an OscTree that represents an OSC Bundle
-	static OscTree      makeBundle( const TimeTag& timeTag = TimeTagClock::local_time() );
+	static OscTree      makeBundle( const TimeTag& timeTag = TimeTag() );
 
 	//! Attempt to retrieve the argument value as the requested type
 	// this does not work for a string or any object type because
@@ -87,11 +101,11 @@ public:
 	template <typename T>
 	inline T			getValue() const
 	{
-		return *static_cast<T*>( const_cast<void*>( mValue.getData() ) );
+		return *static_cast<T*>( const_cast<void*>( mValue->getData() ) );
 	}
 	
 	//! Returns the raw binary representation of the value, only valid for an OscTree that represents an argument
-	ci::Buffer			getValue() const { return mValue; }
+	ci::BufferRef		getValue() const { return mValue; }
 	
 	//! Returns the type tag, only valid for an OscTree that represents argument
 	TypeTag				getTypeTag() const { return mTypeTag; }
@@ -108,7 +122,10 @@ public:
 	void				pushBack( const OscTree& child );
 	
 	//! Converts entire OscTree structure to binary data based on OSC spec
-	ci::Buffer          toBuffer() const;
+	ci::BufferRef		toBuffer() const;
+
+	//! Returns the address, applies to OscTrees that represent OSC Messages
+	const std::string&	getAddress() const { return mAddress; };
 
 	//! Sets the address, applies to OscTrees that represent OSC Messages
 	void				setAddress( const std::string& address );
@@ -117,19 +134,19 @@ public:
 	void				setTimeTag( const TimeTag& timeTag );
     
 protected:
-	std::vector<OscTree>    mChildren;
+	std::vector<OscTree>	mChildren;
 	OscTree*				mParent;
-	ci::Buffer              mValue;
-	std::string             mAddress;
-	TimeTag                 mTimeTag;
-	TypeTag                 mTypeTag;
+	ci::BufferRef			mValue;
+	std::string				mAddress;
+	TimeTag					mTimeTag;
+	TypeTag					mTypeTag;
 	int32_t					mBlobSize;
 	
 	void					init();
-	void					appendTypeTagString( ci::Buffer& buffer, size_t& dataSize ) const;
-	void					appendAddress( ci::Buffer& buffer, size_t& dataSize ) const;
-	void					appendValue( ci::Buffer& buffer, size_t& dataSize ) const;
-	void					appendValue( ci::Buffer& buffer, size_t& dataSize, const ci::Buffer& valueBuffer ) const;
+	void					appendTypeTagString( ci::BufferRef& buffer, size_t& dataSize ) const;
+	void					appendAddress( ci::BufferRef& buffer, size_t& dataSize ) const;
+	void					appendValue( ci::BufferRef& buffer, size_t& dataSize ) const;
+	void					appendValue( ci::BufferRef& buffer, size_t& dataSize, const ci::BufferRef& valueBuffer ) const;
     
 public:
 	//! Base class for OscTree Exceptions
@@ -154,15 +171,16 @@ public:
 template<>
 inline std::string OscTree::getValue<std::string>() const
 {
-    return static_cast<const char*>( mValue.getData() );
+    return static_cast<const char*>( mValue->getData() );
 }
 
 template<>
 inline OscTree::TimeTag OscTree::getValue<OscTree::TimeTag>() const
 {
-    return TimeTagClock::local_time();
+    return TimeTag();
 }
 
+// TODO:
 // throw an exception for trying to read a null
 // getValue() == nullptr
 // Empty Exception - if data is empty
