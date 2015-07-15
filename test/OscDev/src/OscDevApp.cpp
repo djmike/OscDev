@@ -42,13 +42,18 @@ private:
 
 	ci::Font					mFont;
 	std::vector<std::string>	mText;
-	ci::gl::TextureRef			mTexture;
+	ci::gl::TextureRef			mTextureText;
 
 	ci::Surface8uRef			mSurface;
 	ci::Surface8uRef			mSurfaceOsc;
 	ci::Surface8uRef			mSurfaceDiff;
 	ci::Surface8uRef			mSurfaceBufferTestA;
 	ci::Surface8uRef			mSurfaceBufferTestB;
+	ci::gl::Texture2dRef		mTexture;
+	ci::gl::Texture2dRef		mTextureOsc;
+	ci::gl::Texture2dRef		mTextureDiff;
+	ci::gl::BatchRef			mBatchRect;
+	ci::gl::GlslProgRef			mGlslStockTexture;
 
 	ci::params::InterfaceGlRef	mParams;
 	float						mFps;
@@ -116,6 +121,11 @@ OscDevApp::OscDevApp() :
 	mFps( 0.0f ), 
 	mTestIndex( 0 )
 {
+	mGlslStockTexture = gl::getStockShader( gl::ShaderDef().texture( GL_TEXTURE_2D ) );
+
+	mat4 translateMatrix = glm::translate( vec3( 0.5f, 0.5f, 0.0f ) );
+	mBatchRect = gl::Batch::create( geom::Rect().texCoords( vec2( 0, 1 ), vec2( 1, 1 ), vec2( 1, 0 ), vec2( 0, 0 ) )
+		>> geom::Transform( translateMatrix ), mGlslStockTexture );
 }
 
 OscDevApp::~OscDevApp()
@@ -126,25 +136,43 @@ void OscDevApp::draw()
 {
 	gl::clear( Color( 0, 0, 0 ) );
 
-	if ( mTexture ) {
-		gl::draw( mTexture, vec2( 10.0f, 240.0f ) );
+	if ( mTextureText ) {
+		gl::draw( mTextureText, vec2( 10.0f, 240.0f ) );
 	}
 
 	vec2 windowSize = vec2( getWindowSize() );
 	vec2 surfacePos;
-	if ( mSurface ) {
+	if ( mTexture ) {
+		gl::ScopedModelMatrix scopedModelMatrix;
+		gl::ScopedTextureBind scopedTex0( mTexture, 0 );
+
 		surfacePos.x = windowSize.x - 320.0f * 3.0f - 20.0f;
-		gl::draw( gl::Texture::create( *mSurface ), surfacePos );
+		gl::translate( surfacePos );
+		gl::scale( mTexture->getSize() );
+		mBatchRect->draw();
 	}
 
-	if ( mSurfaceOsc ) {
+	if ( mTextureOsc ) {
+		gl::ScopedModelMatrix scopedModelMatrix;
+		gl::ScopedTextureBind scopedTex0( mTextureOsc, 0 );
+
 		surfacePos.x = windowSize.x - 320.0f * 2.0f - 10.0f;
-		gl::draw( gl::Texture::create( *mSurfaceOsc ), surfacePos );
+		gl::translate( surfacePos );
+		gl::scale( mTextureOsc->getSize() );
+		mBatchRect->draw();
 	}
 
-	if ( mSurfaceDiff ) {
-		surfacePos.x = windowSize.x - 320.0f;
-		gl::draw( gl::Texture::create( *mSurfaceDiff ), surfacePos );
+	if ( mTextureDiff ) {
+		{
+			gl::ScopedModelMatrix scopedModelMatrix;
+			gl::ScopedTextureBind scopedTex0( mTextureDiff, 0 );
+
+			surfacePos.x = windowSize.x - 320.0f;
+			gl::translate( surfacePos );
+			gl::scale( mTextureDiff->getSize() );
+			mBatchRect->draw();
+		}
+
 		gl::ScopedColor scopedColor( Colorf( 1.0f, 0.0f, 1.0f ) );
 		gl::drawStrokedRect( Rectf( surfacePos, surfacePos + vec2( 320.0f, 240.0f ) ), 3.0f );
 	}
@@ -437,6 +465,10 @@ void OscDevApp::testBlobImage()
 		CI_LOG_F( "<<< FATAL Test Failure >>> " + result );
 	}
 	mText.push_back( result );
+
+	mTexture = gl::Texture2d::create( *mSurface );
+	mTextureOsc = gl::Texture2d::create( *mSurfaceOsc );
+	mTextureDiff = gl::Texture2d::create( *mSurfaceDiff );
 }
 
 void OscDevApp::testBlobArray()
@@ -598,19 +630,19 @@ void OscDevApp::update()
 	mFps = getAverageFps();
 
 	// Render text.
-	if ( !mText.empty() ) {
-		TextBox tbox = TextBox().alignment( TextBox::LEFT ).font( mFont ).size( ivec2( getWindowWidth() - 250, TextBox::GROW ) ).text( "" );
-		for ( vector<string>::const_reverse_iterator iter = mText.rbegin(); iter != mText.rend(); ++iter ) {
-			tbox.appendText( "> " + *iter + "\n" );
-		}
-		tbox.setColor( ColorAf( 1.0f, 0.8f, 0.75f, 1.0f ) );
-		tbox.setBackgroundColor( ColorAf::black() );
-		tbox.setPremultiplied( false );
-		mTexture = gl::Texture::create( tbox.render() );
-		while ( mText.size() > 75 ) {
-			mText.erase( mText.begin() );
-		}
-	}
+	//if ( !mText.empty() ) {
+	//	TextBox tbox = TextBox().alignment( TextBox::LEFT ).font( mFont ).size( ivec2( getWindowWidth() - 250, TextBox::GROW ) ).text( "" );
+	//	for ( vector<string>::const_reverse_iterator iter = mText.rbegin(); iter != mText.rend(); ++iter ) {
+	//		tbox.appendText( "> " + *iter + "\n" );
+	//	}
+	//	tbox.setColor( ColorAf( 1.0f, 0.8f, 0.75f, 1.0f ) );
+	//	tbox.setBackgroundColor( ColorAf::black() );
+	//	tbox.setPremultiplied( false );
+	//	mTextureText = gl::Texture::create( tbox.render() );
+	//	while ( mText.size() > 75 ) {
+	//		mText.erase( mText.begin() );
+	//	}
+	//}
 }
 
 void OscDevApp::testFromBuffer()
